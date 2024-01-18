@@ -13,15 +13,9 @@
         </v-row>
       </v-card-text>
       <v-card-actions>
-        <v-spacer v-if="isConnected"></v-spacer>
+        <v-spacer></v-spacer>
 
-        <template v-if="!isConnected">
-          <v-text-field label="URL" v-model="url">
-            <template v-slot:append>
-              <v-btn @click="connectWithHRM">Connect</v-btn>
-            </template>
-          </v-text-field>
-        </template>
+        <v-btn v-if="!isConnected" @click="connectWithHRM">Connect</v-btn>
         <v-btn v-else-if="!isMeasureHRM" @click="startHRMMeasure"
           >Start Measure</v-btn
         >
@@ -44,13 +38,11 @@ import {
 const currentHeartRate = ref(0);
 const isConnected = ref(false);
 const isMeasureHRM = ref(false);
-const url = ref("http://kihacker.ddns.net/process_string/{puls}");
+const url = ref("puls/{puls}");
 
 const connectWithHRM = () => {
   connect().then((res) => {
-    debugger;
-    if (res)
-      isConnected.value = true;
+    if (res) isConnected.value = true;
   });
 };
 

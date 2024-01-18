@@ -46,5 +46,13 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    proxy: {
+      "/puls": {
+        target: "http://kihacker.ddns.net/process_string/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/puls/, '/process_string'),
+      }
+    }
   },
 })
