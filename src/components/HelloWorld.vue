@@ -34,11 +34,12 @@ import {
   startHeartRateMeasurement,
   stopHeartRateMeasurement,
 } from "bluetooth-heart-rate";
+import { throttle } from "lodash"
 
 const currentHeartRate = ref(0);
 const isConnected = ref(false);
 const isMeasureHRM = ref(false);
-const url = ref("puls/{puls}");
+const url = ref("puls/");
 
 const connectWithHRM = () => {
   connect().then((res) => {
@@ -50,10 +51,14 @@ const startHRMMeasure = () => {
   isMeasureHRM.value = true;
   startHeartRateMeasurement((bpm) => {
     currentHeartRate.value = bpm;
-    const requestUrl = url.value.replace("{puls}", bpm);
-    fetch(requestUrl);
+    sendRequest(bpm);
   });
 };
+
+const sendRequest = throttle((bpm) => {
+  const requestUrl = url.value + bpm;
+    fetch(requestUrl);
+}, 1000);
 
 const stopHRMMeasure = () => {
   isMeasureHRM.value = false;
