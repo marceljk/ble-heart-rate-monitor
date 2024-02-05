@@ -15,10 +15,10 @@
       <v-card-actions>
         <v-spacer></v-spacer>
 
+        <v-btn @click="test">Test request (Puls = 0)</v-btn>
+        <v-btn @click="ledOff">LED off</v-btn>
         <v-btn v-if="!isConnected" @click="connectWithHRM">Connect</v-btn>
-        <v-btn v-else-if="!isMeasureHRM" @click="startHRMMeasure"
-          >Start Measure</v-btn
-        >
+        <v-btn v-else-if="!isMeasureHRM" @click="startHRMMeasure">Start Measure</v-btn>
         <v-btn v-else @click="stopHRMMeasure">Stop Measure</v-btn>
       </v-card-actions>
     </v-card>
@@ -47,6 +47,8 @@ const connectWithHRM = () => {
   });
 };
 
+const lastRequestBPM = ref(0);
+
 const startHRMMeasure = () => {
   isMeasureHRM.value = true;
   startHeartRateMeasurement((bpm) => {
@@ -56,9 +58,19 @@ const startHRMMeasure = () => {
 };
 
 const sendRequest = throttle((bpm) => {
-  const requestUrl = url.value + bpm;
+  if (lastRequestBPM.value !== bpm) {
+    lastRequestBPM.value = bpm;
+
+    const requestUrl = url.value + bpm;
     fetch(requestUrl);
-}, 1000);
+    console.log("Send", bpm);
+  } else {
+    console.log("Not send", bpm);
+  }
+}, 2000);
+
+const test = () => fetch(url.value + 0);
+const ledOff = () => fetch(url.value + -1);
 
 const stopHRMMeasure = () => {
   isMeasureHRM.value = false;
